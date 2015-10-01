@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/project_chat");
+mongoose.connect(process.env.MONGOLAB_URI || "mongodb://localhost/project_chat");
 
 mongoose.set("debug", true);
 
