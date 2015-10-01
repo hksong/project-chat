@@ -1,0 +1,41 @@
+<% layout('boilerplate') -%>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2"> 
+      <form action='/login' class="jumbotron" method='POST'>
+        <h2>Login</h2>
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" class="form-control" name='user[username]' id="username" autofocus required placeholder="Minimum 1 Character">
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" class="form-control" name='user[password]' id="password" required placeholder="Minimum 1 Character">
+        </div>
+        <button type="submit" class="btn btn-default" disabled>Log In</button>
+      </form>
+      <% if (alerts) { %>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <strong>Warning!</strong> <%=alerts%>
+        </div>
+      <% } %>
+    </div> 
+  </div>
+</div>
+
+<script>
+  $(function() {
+    $('.form-group input').change(function(event) {
+      $('button[type="submit"]').attr('disabled', true);
+      if (validate) {
+        
+      }
+    });
+  });
+
+  function validate() {
+    return $('#username').val().length && $('#password').val().length;
+  }
+</script>

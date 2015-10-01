@@ -1,0 +1,35 @@
+<% layout('boilerplate') -%>
+
+<div class="row">
+  <div class="col-md-8 col-md-offset-2"> 
+    <form id='signup' action='/signup' class="jumbotron" method='POST'>
+      <h2>Sign Up a New Account</h2>
+      <div class="form-group">
+        <label for="signupUser">Username:</label>
+        <input type="text" class="form-control" name='user[username]' id="signupUser" autofocus required placeholder="Minimum 1 character">
+      </div>
+      <div class="form-group">
+        <label for="signupPass">Password:</label>
+        <input type="password" class="form-control" name='user[password]' id="signupPass" required placeholder="Minimum 1 character">
+      </div>
+      <button type="submit" class="btn btn-default" disabled>Sign Up</button>
+    </form>
+    <% if (alerts) { %>
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Warning!</strong> <%=alerts%>
+    </div>
+    <% } %>
+  </div> 
+</div>
+
+<script>
+  $(function() {
+    $('#signup input').keyup(function(event) {
+      $('#signup button').attr('disabled', true);
+      if ($('#signupUser').val().length && $('#signupPass').val().length) {
+        $('#signup button').removeAttr('disabled');
+      }
+    });
+  });
+</script>

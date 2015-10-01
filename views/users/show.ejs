@@ -1,0 +1,34 @@
+<% layout('boilerplate') -%>
+
+<div class="row">
+  <div class="col-md-4"> <!-- profile -->
+    <table class="table table-hover table-bordered text-center">
+      <thead>
+        <tr>
+          <th class="text-center"><%= user.username %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (currentUser.id === user.id) { %>
+        <tr>
+          <td>
+            <a href=<%= "/users/"+user.id+"/edit" %> class="btn btn-success">Change Password</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <form action="/users/<%=user.id%>?_method=delete" method="POST">
+              <button class="btn btn-danger navbar-btn">Delete Account</button>
+            </form>
+          </td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-8"> <!-- posts and comments -->
+    <div class="container-fluid">
+      
+    </div>
+  </div>
+</div>
