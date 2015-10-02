@@ -6,6 +6,7 @@ var express = require('express'),
   methodOverride = require('method-override'),
   session = require('cookie-session'),
   morgan = require('morgan'),
+  mongoose = require('mongoose'),
   currentUser = require('./middleware/currentUser.js'),
   currentRoom = require('./middleware/currentRoom.js'),
   loginHelper = require('./middleware/loginHelper.js'),
@@ -86,86 +87,16 @@ app.get('/rooms', ensureLoggedIn, function(req, res) {
   });
 });
 
-// NEW Room
-app.get('/rooms/new', function(req, res) {
-  res.locals.htmlTitle = "Add New Room";
-  res.locals.activeNav = "newRoom";
-  res.render("rooms/new");
-});
-
-// CREATE Room
-app.post('/rooms', function(req, res) {
-  Room.create(req.body.room, function(err, room) {
-    if (err) {
-      throw err;
-    }
-    else {
-      res.redirect('/rooms/'+room._id);
-    }
-  });
-});
-
-// SHOW Room
-app.get('/rooms/:id', function(req, res) {
-  Room.findById(req.params.id, function(err, room) {
-    if (err) throw err;
-    if (room) {
-      res.locals.htmlTitle = room.REPLACE_WITH_KEY;
-      res.locals.activeNav = "showRoom";
-      res.locals.room = room;
-      res.render("rooms/show");
-    }
-    else {
-      res.redirect('/404');
-    }
-  });
-});
-
-// EDIT Room
-app.get('/rooms/:id/edit', ensureLoggedIn, ensureCorrectUser, function(req, res) {
-  Room.findById(req.params.id, function(err, room) {
-    if (err) throw err;
-    if (room) {
-      res.locals.room = room;
-      res.locals.htmlTitle = "Edit Room";
-      res.locals.activeNav = "showRoom";
-      res.render("rooms/edit");
-    }
-    else {
-      res.redirect('/404');
-    }
-  });
-});
-
-// UPDATE Room
-app.put('/rooms/:id', function(req, res) {
-  Room.findById(req.params.id, function(err, room) {
-    if (err) {
-      throw err;
-    }
-    else {
-      room = req.body.room;
-      room.save();
-      res.redirect('/rooms/'+room._id);
-    }
-  });
-});
-
-// DESTROY Room
-app.delete('/rooms/:id', function(req, res) {
-  Room.remove(req.params.id, function(err, room) {
-    if (err) {
-      throw err;
-    }
-    else {
-      res.redirect('/rooms');
-    }
-  });
-});
-
 // SHOW User
 app.get('/users/:id', ensureLoggedIn, function(req, res) {
-  User.findById(req.params.id, function(err, user) {
+  var param = req.params.id;
+  var mongoID = new mongoose.Types.ObjectId((param.length === 24 ? param : "000000000000"));
+  console.log("**** SHOW USER ****");
+  console.log("param:", param);
+  console.log("typeof param:", typeof param);
+  console.log("mongoID:", mongoID);
+  console.log("conditional:", (param.length === 12 ? param : "000000000000"));
+  User.findOne({$or: [{username: param}, {_id: mongoID}]}, function(err, user) {
     if (err) {
       throw err;
     }

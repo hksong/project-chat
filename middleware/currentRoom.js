@@ -4,7 +4,7 @@ var currentRoom = function(req, res, next) {
     next();
   }
   else {
-    Room.findById(res.locals.currentUser.currentRoom, function(err, room) {
+    Room.findOne({name: res.locals.currentUser.currentRoom}, function(err, room) {
       if (err) {
         next(err);
       }
