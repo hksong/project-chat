@@ -16,6 +16,9 @@
         </tr>
       </thead>
       <tbody>
+        <tr>
+          <td><img src="<%= user.avatar %>" alt="" class="img-responsive"></td>
+        </tr>
         <% if (currentUser.id === user.id) { %>
         <tr>
           <td>
@@ -33,7 +36,7 @@
                 <div class="modal-content">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="deleteModalLabel">Are you sure you want to DELETE your account?</h4>
+                    <h2 class="modal-title" id="deleteModalLabel"><small>Are you sure you want to </small>DELETE<small> your account?</small></h2>
                   </div>
                   <div class="modal-body">
                     <form action="/users/<%=user.username%>?_method=delete" method="POST" id="deleteForm">

@@ -25,6 +25,10 @@ var userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  avatar: {
+    type: String,
+    default: "http://lorempixel.com/400/400/",
+  },
 });
 
 userSchema.pre('save', function(next) {
