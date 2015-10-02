@@ -91,11 +91,6 @@ app.get('/rooms', ensureLoggedIn, function(req, res) {
 app.get('/users/:id', ensureLoggedIn, function(req, res) {
   var param = req.params.id;
   var mongoID = new mongoose.Types.ObjectId((param.length === 24 ? param : "000000000000"));
-  console.log("**** SHOW USER ****");
-  console.log("param:", param);
-  console.log("typeof param:", typeof param);
-  console.log("mongoID:", mongoID);
-  console.log("conditional:", (param.length === 12 ? param : "000000000000"));
   User.findOne({$or: [{username: param}, {_id: mongoID}]}, function(err, user) {
     if (err) {
       throw err;
@@ -135,6 +130,21 @@ app.put('/users/:id', function(req, res) {
     }
   });
 });
+
+// DELETE User
+app.delete('/users/:id', function(req, res) {
+  User.authenticate(req.body.user, function(err, user) {
+    if (err) {
+      req.session.alerts = "Password does not match";
+      res.redirect('/users/'+req.params.id+'/');
+    }
+    else {
+      user.remove();
+      req.logout();
+      res.redirect('/login');
+    }
+  });
+})
 
 // SIGNUP GET
 app.get('/signup', preventLoginSignup, function(req, res) {

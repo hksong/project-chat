@@ -1,5 +1,12 @@
 <% layout('boilerplate') -%>
 
+<% if (alerts) { %>
+  <div class="alert alert-danger alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>Warning!</strong> <%=alerts%>
+  </div>
+<% } %>
+
 <div class="row">
   <div class="col-md-4"> <!-- profile -->
     <table class="table table-hover table-bordered text-center">
@@ -12,14 +19,41 @@
         <% if (currentUser.id === user.id) { %>
         <tr>
           <td>
-            <a href=<%= "/users/"+user.id+"/edit" %> class="btn btn-success">Change Password</a>
+            <a href=<%= "/users/"+user.username+"/edit" %> class="btn btn-success">Change Password</a>
           </td>
         </tr>
         <tr>
           <td>
-            <form action="/users/<%=user.id%>?_method=delete" method="POST">
-              <button class="btn btn-danger">Delete Account</button>
-            </form>
+            <!-- Button trigger modal -->
+            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete Account</button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="deleteModalLabel">Are you sure you want to DELETE your account?</h4>
+                  </div>
+                  <div class="modal-body">
+                    <form action="/users/<%=user.username%>?_method=delete" method="POST" id="deleteForm">
+                      <div class="form-group">
+                        <label for="deleteUsername">Username:</label>
+                        <input type="text" class="form-control" name="user[username]" id="deleteUsername" value="<%=user.username%>" readonly>
+                      </div>
+                      <div class="form-group">
+                        <label for="deletePassword">Verify Password:</label>
+                        <input type="password" class="form-control" name="user[password]" id="deletePassword" autofocus required>
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button class="btn btn-danger">Delete Account</button>
+                    </form>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Take me Back!</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </td>
         </tr>
         <% } %>

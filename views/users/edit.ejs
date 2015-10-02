@@ -1,7 +1,7 @@
 <% layout('boilerplate') -%>
 <div class="row">
   <div class="col-md-8 col-md-offset-2"> 
-    <form id="updateForm" action="/users/<%=user.id%>?_method=put" class="jumbotron" method="POST">
+    <form id="updateForm" action="/users/<%=user.username%>?_method=put" class="jumbotron" method="POST">
       <h2>Change Password</h2>
       <div class="form-group">
         <label for="curUsername">Username:</label>

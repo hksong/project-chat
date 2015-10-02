@@ -41,7 +41,7 @@
                 </li>
               <% } else { %>
                 <li class=<%= activeNav === "showUser" && currentUser.username === user.username ? "active" : "" %>>
-                  <a href=<%= activeNav !== "showUser" || currentUser.username !== user.username  ? "/users/"+currentUser.id : "" %>><%= currentUser.username %></a>
+                  <a href=<%= activeNav !== "showUser" || currentUser.username !== user.username  ? "/users/"+currentUser.username : "" %>><%= currentUser.username %></a>
                 </li>
                 <% if (activeNav === "showUser" && currentUser.username !== user.username) { %>
                   <li class="active">

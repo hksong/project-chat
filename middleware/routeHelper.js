@@ -11,8 +11,8 @@ var routeHelper = {
   },
 
   ensureCorrectUser: function(req, res, next) {
-    if (req.params.id !== req.session.id) {
-      req.session.alerts = new Error("unauthorized user; log in with the correct account");
+    if (req.params.id !== req.session.id && req.params.id !== req.session.username) {
+      req.session.alerts = "unauthorized user; log in with the correct account";
       req.logout();
       res.redirect('/login');
     }
