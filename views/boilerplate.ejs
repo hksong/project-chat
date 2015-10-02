@@ -30,19 +30,24 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
               <li class=<%= activeNav === "rooms" ? "active" : "" %>>
-                <a <% if (activeNav !== "rooms") { %>href=<%= "/rooms" %><% } %>>Home</a>
+                <a href=<%= activeNav !== "rooms" ? "/rooms" : ""%>>Default</a>
               </li>
-              <li class=<%= activeNav === "newRoom" ? "active" : "" %>>
-                <a <% if (activeNav !== "newRoom") { %>href=<%= "/rooms/new" %><% } %>>New Room</a>
+              <li class=<%= activeNav === "newRoom" ? "active" : ""%>>
+                <a href=<%= activeNav !== "newRoom" ? "/rooms/new" : ""%>>New Room</a>
               </li>
               <% if (!currentUser) { %>
                 <li class=<%= activeNav === "newUser" ? "active" : "" %>>
-                  <a <% if (activeNav !== "newUser") { %>href=<%= "/signup" %><% } %>>Sign Up</a>
+                  <a href=<%= activeNav !== "newUser" ? "/signup" : "" %>>Sign Up</a>
                 </li>
               <% } else { %>
-                <li class=<%= activeNav === "showRoom" ? "active" : "" %>>
-                  <a><%= currentRoom %></a>
+                <li class=<%= activeNav === "showUser" && currentUser.username === user.username ? "active" : "" %>>
+                  <a href=<%= activeNav !== "showUser" || currentUser.username !== user.username  ? "/users/"+currentUser.id : "" %>><%= currentUser.username %></a>
                 </li>
+                <% if (activeNav === "showUser" && currentUser.username !== user.username) { %>
+                  <li class="active">
+                    <a><%= user.username %></a>
+                  </li>
+                <% } %>
               <% } %>
             </ul>
             <ul class="nav navbar-right">

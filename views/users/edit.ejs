@@ -1,57 +1,38 @@
 <% layout('boilerplate') -%>
-
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-8 col-md-offset-2"> 
-      <form id="updatePW" action='/users' class="jumbotron" method='POST'>
-        <h2>Change Password</h2>
-        <div class="form-group">
-          <label for="curPassword" class="col-xs-2 control-label">Current Password:</label>
-          <input type="password" class="form-control" name='user[password]' id="curPassword" required>
-        </div>
-        <div class="form-group">
-          <label for="newPassword" class="col-xs-2 control-label">New Password:</label>
-          <input type="password" class="form-control" name='user[password]' id="newPassword" required placeholder="Minimum 1 Character">
-          <span class="validation"></span>
-        </div>
-        <div class="form-group">
-          <label for="newPassword2" class="col-xs-2 control-label">Retype New Password:</label>
-          <input type="password" class="form-control" name='user[password]' id="newPassword2" required placeholder="Minimum 1 Character">
-          <span class="validation"></span>
-        </div>
-        <button type="submit" class="btn btn-default">Update Password</button>
-      </form>
-      <% if (alerts) { %>
-        <div class="alert alert-danger alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <strong>Warning!</strong> <%=alerts%>
-        </div>
-      <% } %>
-    </div> 
-  </div>
+<div class="row">
+  <div class="col-md-8 col-md-offset-2"> 
+    <form id="updateForm" action="/users/<%=user.id%>?_method=put" class="jumbotron" method="POST">
+      <h2>Change Password</h2>
+      <div class="form-group">
+        <label for="curUsername">Username:</label>
+        <input type="text" class="form-control" name="user[username]" id="curUsername" value="<%=user.username%>" readonly>
+      </div>
+      <div class="form-group">
+        <label for="curPassword">Current Password:</label>
+        <input type="password" class="form-control" name="user[password]" id="curPassword" autofocus required>
+      </div>
+      <div class="form-group has-feedback">
+        <label for="newPassword" class="control-label">New Password:</label>
+        <input type="password" class="form-control" name="user[newPassword]" id="newPassword" required>
+      </div>
+      <div class="form-group has-feedback">
+        <label for="verifyNewPassword" class="control-label">Verify New Password:</label>
+        <input type="password" class="form-control" id="verifyNewPassword" required>
+      </div>
+      <button type="submit" class="btn btn-default" id="updateButton">Update Password</button>
+    </form>
+    <% if (alerts) { %>
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>Warning!</strong> <%=alerts%>
+    </div>
+    <% } %>
+  </div> 
 </div>
 
+<script src="../../js/validate.js"></script>
 <script>
   $(function() {
-    var $button = $('#updatePW button');
-    var $inputs = $('#updatePW input');
-    $inputs.change(function(event) {
-      $button.attr('disabled', true);
-      if (validate()) {
-        $inputs.addClass("glyphicon glyphicon-ok");
-        $inputs.removeClass("glyphicon glyphicon-remove");
-        $button.removeAttr('disabled');
-      }
-      else {
-        $inputs.addClass("glyphicon glyphicon-ok");
-        $inputs.removeClass("glyphicon glyphicon-remove");
-      }
-    });
+    validate("#updateForm", "#updateButton", "#newPassword", "#verifyNewPassword");
   });
-
-  function validate() {
-    var pw1 = $('#newPassword').val();
-    var pw2 = $('#newPassword2').val();
-    return pw1.length && pw2.length && pw1 === pw2;
-  }
 </script>

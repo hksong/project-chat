@@ -1,18 +1,22 @@
-<% layout('boilerplate') -%>
+<% layout("boilerplate") -%>
 
 <div class="row">
   <div class="col-md-8 col-md-offset-2"> 
-    <form id='signup' action='/signup' class="jumbotron" method='POST'>
+    <form id="signupForm" action="/signup" class="jumbotron" method="POST">
       <h2>Sign Up a New Account</h2>
       <div class="form-group">
         <label for="signupUser">Username:</label>
-        <input type="text" class="form-control" name='user[username]' id="signupUser" autofocus required placeholder="Minimum 1 character">
+        <input type="text" class="form-control" name="user[username]" id="signupUser" autofocus required>
       </div>
-      <div class="form-group">
-        <label for="signupPass">Password:</label>
-        <input type="password" class="form-control" name='user[password]' id="signupPass" required placeholder="Minimum 1 character">
+      <div class="form-group has-feedback">
+        <label for="signupPass" class="control-label">Password:</label>
+        <input type="password" class="form-control" name="user[password]" id="signupPass" required>
       </div>
-      <button type="submit" class="btn btn-default" disabled>Sign Up</button>
+      <div class="form-group has-feedback">
+        <label for="verifySignupPass" class="control-label">Verify Password:</label>
+        <input type="password" class="form-control" id="verifySignupPass" required>
+      </div>
+      <button type="submit" class="btn btn-default" id="signupButton" disabled>Sign Up</button>
     </form>
     <% if (alerts) { %>
     <div class="alert alert-danger alert-dismissible" role="alert">
@@ -23,13 +27,9 @@
   </div> 
 </div>
 
+<script src="js/validate.js"></script>
 <script>
   $(function() {
-    $('#signup input').keyup(function(event) {
-      $('#signup button').attr('disabled', true);
-      if ($('#signupUser').val().length && $('#signupPass').val().length) {
-        $('#signup button').removeAttr('disabled');
-      }
-    });
+    validate("#signupForm", "#signupButton", "#signupPass", "#verifySignupPass");
   });
 </script>

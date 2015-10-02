@@ -13,6 +13,18 @@ var userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  currentRoom: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Room",
+  },
+  ownedRooms: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Room",
+  }],
+  friends: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 userSchema.pre('save', function(next) {
@@ -44,7 +56,7 @@ userSchema.statics.authenticate = function (formData, callback) {
   },
   function (err, user) {
     if (user === null){
-      callback("Invalid username or password",null);
+      callback(new Error("Invalid username or password"),null);
     }
     else {
       user.checkPassword(formData.password, callback);
@@ -58,7 +70,7 @@ userSchema.methods.checkPassword = function(password, callback) {
     if (isMatch) {
       callback(null, user);
     } else {
-      callback("Invalid username or password", null);
+      callback(new Error("Invalid username or password"), null);
     }
   });
 };

@@ -5,10 +5,12 @@ var express = require('express'),
   bodyParser = require("body-parser");
   methodOverride = require('method-override'),
   session = require('cookie-session'),
+  morgan = require('morgan'),
   currentUser = require('./middleware/currentUser.js'),
+  currentRoom = require('./middleware/currentRoom.js'),
   loginHelper = require('./middleware/loginHelper.js'),
   routeHelper = require('./middleware/routeHelper.js'),
-  sessionAlert = require('./middleware/sessionAlert.js'),
+  sessionAlerts = require('./middleware/sessionAlerts.js'),
   ensureLoggedIn = routeHelper.ensureLoggedIn,
   ensureCorrectUser = routeHelper.ensureCorrectUser,
   preventLoginSignup = routeHelper.preventLoginSignup,
@@ -25,13 +27,46 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended: true})); 
 app.use(methodOverride('_method'));
+app.use(morgan('tiny'));
 app.use(session({
   secret: process.env.SESSION_SECRET,
   name: "something you should ignore",
 }));
 app.use(loginHelper);
 app.use(currentUser);
-app.use(sessionAlert);
+app.use(currentRoom);
+app.use(sessionAlerts);
+
+var defaultRoomID;
+
+// initialize Admin user, Default room, and Default Room ID
+User.findOne({username: "admin"}, function(err, user) {
+  if (err) {
+    throw err;
+  }
+  else if (user === null) {
+    var newAdmin = new User({username: "admin", password: process.env.ADMIN_SECRET});
+    newAdmin.save(function(err) {
+      Room.findOne({name: "default"}, function(err, room) {
+        if (err) {
+          throw err;
+        }
+        else if (room === null) {
+          var newDefault = new Room({name: "default", owner: newAdmin.id});
+          newDefault.save(function(err) {
+            defaultRoomID = newDefault.id;
+            newAdmin.currentRoom = defaultRoomID;
+            newAdmin.ownedRooms.push(defaultRoomID);
+            newAdmin.save();
+          });
+        }
+      });
+    });
+  }
+  else {
+    defaultRoomID = user.ownedRooms[0].toString();
+  }
+});
 
 // 'GET' for root '/'
 app.get('/', function(req, res) {
@@ -39,9 +74,11 @@ app.get('/', function(req, res) {
 });
 
 // INDEX Room
-app.get('/rooms', function(req, res) {
-  Room.find({}, function(err, rooms) {
-    if (err) throw err;
+app.get('/rooms', ensureLoggedIn, function(req, res) {
+  Room.findById(defaultRoomID, function(err, rooms) {
+    if (err) {
+      throw err;
+    }
     res.locals.htmlTitle = "Room";
     res.locals.activeNav = "rooms";
     res.locals.rooms = rooms;
@@ -126,6 +163,48 @@ app.delete('/rooms/:id', function(req, res) {
   });
 });
 
+// SHOW User
+app.get('/users/:id', ensureLoggedIn, function(req, res) {
+  User.findById(req.params.id, function(err, user) {
+    if (err) {
+      throw err;
+    }
+    else if (user === null) {
+      res.redirect('/rooms');
+    }
+    else {
+      res.locals.user = user;
+      res.locals.htmlTitle = user.username;
+      res.locals.activeNav = "showUser";
+      res.render("users/show");
+    }
+  });
+});
+
+// EDIT User
+app.get('/users/:id/edit', ensureLoggedIn, ensureCorrectUser, function(req, res) {
+  res.locals.user = res.locals.currentUser;
+  res.locals.htmlTitle = "change";
+  res.locals.activeNav = "showUser";
+  res.render("users/edit");
+});
+
+// UPDATE User Password
+app.put('/users/:id', function(req, res) {
+  User.authenticate(req.body.user, function(err, user) {
+    if (err) {
+      req.session.alerts = "Current password does not match";
+      res.redirect('/users/'+req.params.id+'/edit');
+    }
+    else {
+      user.password = req.body.user.newPassword;
+      user.save();
+      req.logout();
+      res.redirect('/login');
+    }
+  });
+});
+
 // SIGNUP GET
 app.get('/signup', preventLoginSignup, function(req, res) {
   res.locals.htmlTitle = "Sign Up";
@@ -146,9 +225,10 @@ app.post('/signup', function(req, res) {
       }
     }
     else {
+      user.currentRoom = defaultRoomID;
       user.save();
       req.login(user);
-      res.redirect('/rooms');
+      res.redirect('/login');
     }
   });
 });
@@ -164,7 +244,7 @@ app.get('/login', preventLoginSignup, function(req, res) {
 app.post('/login', preventLoginSignup, function(req, res) {
   User.authenticate(req.body.user, function(err, user) {
     if (err) {
-      req.session.alerts = err;
+      req.session.alerts = err.message;
       res.redirect('/login');
     }
     else {
@@ -187,5 +267,4 @@ app.get('*', function(req, res){
 
 // start server
 app.listen(process.env.PORT || 3000, function() {
-  console.log('Server running on port:3000');
 });

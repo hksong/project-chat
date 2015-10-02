@@ -20,6 +20,10 @@ var roomSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  bannedUsers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }],
 });
 
 roomSchema.pre('save', function(next) {
